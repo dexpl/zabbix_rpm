@@ -1,0 +1,42 @@
+.PHONY: rpm srpm
+#.SILENT:
+
+#specfile MUST be defined upstream
+#coprproject MUST be defined upstream
+mockresultdir := mockresult
+srcrpmdir := $(shell rpm -E %_srcrpmdir)
+srpmfile := $(addprefix $(srcrpmdir)/,$(addsuffix .src.rpm,$(shell rpmspec --srpm --query --qf '%{nevr}' $(specfile))))
+# This requires rpmspec >= 4.14.2.1
+rpmfiles := $(addsuffix .rpm,$(shell rpmspec --builtrpms --query $(specfile)))
+mockrpmfiles := $(addprefix $(mockresultdir)/,$(rpmfiles))
+# TODO report (or better fix) spectool's inability to list sources and patches separately
+#sourcefiles := $(shell spectool --sources $(specfile) | cut -d ' ' -f 2)
+#patchfiles := $(shell spectool --patches $(specfile) | cut -d ' ' -f 2)
+srcurls != spectool --all $(specfile) | cut -d ' ' -f 2
+srcfiles := $(notdir $(srcurls))
+# TODO utilize ~/rpmbuild/* (how?)
+#rpmbuildopts := -D '_sourcedir .' -D '_srcrpmdir .'
+
+rpm: $(rpmfiles)
+
+srpm: $(srpmfile)
+
+# TODO query somehow whether the successful build exist
+copr: rpm
+	copr build $(coprproject) $(srpmfile)
+	touch copr
+
+# TODO it's awfully rude
+$(srcfiles):
+	spectool -R -g $(specfile)
+
+$(srpmfile): $(specfile) $(srcfiles)
+	rpmlint $< || :
+	rpmbuild $(rpmbuildopts) -bs $<
+
+$(rpmfiles): $(mockrpmfiles)
+	install -D -m 0644 -p $^ .
+
+$(mockrpmfiles)&: $(srpmfile)
+	rpmlint $< || :
+	mock --resultdir $(mockresultdir) $(mockopts) $<
