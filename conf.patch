@@ -1,0 +1,230 @@
+diff -urN zabbix-5.4.0/conf/zabbix_agentd.conf zabbix-5.4.0-patched/conf/zabbix_agentd.conf
+--- zabbix-5.4.0/conf/zabbix_agentd.conf	2021-04-26 18:52:41.000000000 +0300
++++ zabbix-5.4.0-patched/conf/zabbix_agentd.conf	2021-06-03 13:50:48.085656485 +0300
+@@ -10,6 +10,8 @@
+ # Default:
+ # PidFile=/tmp/zabbix_agentd.pid
+ 
++PidFile=/var/run/zabbix/zabbix_agentd.pid
++
+ ### Option: LogType
+ #	Specifies where log messages are written to:
+ #		system  - syslog
+@@ -27,7 +29,7 @@
+ # Default:
+ # LogFile=
+ 
+-LogFile=/tmp/zabbix_agentd.log
++LogFile=/var/log/zabbix/zabbix_agentd.log
+ 
+ ### Option: LogFileSize
+ #	Maximum size of log file in MB.
+@@ -38,6 +40,8 @@
+ # Default:
+ # LogFileSize=1
+ 
++LogFileSize=0
++
+ ### Option: DebugLevel
+ #	Specifies debug level:
+ #	0 - basic information about starting and stopping of Zabbix processes
+@@ -293,6 +297,7 @@
+ # Mandatory: no
+ # Default:
+ # User=zabbix
++# NOTE: This option is overriden by settings in systemd service file!
+ 
+ ### Option: Include
+ #	You may include individual files or all files in a directory in the configuration file.
+@@ -302,6 +307,8 @@
+ # Default:
+ # Include=
+ 
++Include=/etc/zabbix/zabbix_agentd.d/*.conf
++
+ # Include=/usr/local/etc/zabbix_agentd.userparams.conf
+ # Include=/usr/local/etc/zabbix_agentd.conf.d/
+ # Include=/usr/local/etc/zabbix_agentd.conf.d/*.conf
+diff -urN zabbix-5.4.0/conf/zabbix_proxy.conf zabbix-5.4.0-patched/conf/zabbix_proxy.conf
+--- zabbix-5.4.0/conf/zabbix_proxy.conf	2021-04-26 18:52:41.000000000 +0300
++++ zabbix-5.4.0-patched/conf/zabbix_proxy.conf	2021-06-03 13:36:33.849788003 +0300
+@@ -88,7 +88,7 @@
+ # Default:
+ # LogFile=
+ 
+-LogFile=/tmp/zabbix_proxy.log
++LogFile=/var/log/zabbix/zabbix_proxy.log
+ 
+ ### Option: LogFileSize
+ #	Maximum size of log file in MB.
+@@ -99,6 +99,8 @@
+ # Default:
+ # LogFileSize=1
+ 
++LogFileSize=0
++
+ ### Option: DebugLevel
+ #	Specifies debug level:
+ #	0 - basic information about starting and stopping of Zabbix processes
+@@ -138,6 +140,8 @@
+ # Default:
+ # PidFile=/tmp/zabbix_proxy.pid
+ 
++PidFile=/var/run/zabbix/zabbix_proxy.pid
++
+ ### Option: SocketDir
+ #	IPC socket directory.
+ #		Directory to store IPC sockets used by internal Zabbix services.
+@@ -146,6 +150,8 @@
+ # Default:
+ # SocketDir=/tmp
+ 
++SocketDir=/var/run/zabbix
++
+ ### Option: DBHost
+ #	Database host name.
+ #	If set to localhost, socket is used for MySQL.
+@@ -414,6 +420,8 @@
+ # Default:
+ # SNMPTrapperFile=/tmp/zabbix_traps.tmp
+ 
++SNMPTrapperFile=/var/log/snmptrap/snmptrap.log
++
+ ### Option: StartSNMPTrapper
+ #	If 1, SNMP trapper process is started.
+ #
+@@ -529,7 +537,7 @@
+ #
+ # Mandatory: no
+ # Default:
+-# ExternalScripts=${datadir}/zabbix/externalscripts
++# ExternalScripts=/usr/lib/zabbix/externalscripts
+ 
+ ### Option: FpingLocation
+ #	Location of fping.
+diff -urN zabbix-5.4.0/conf/zabbix_server.conf zabbix-5.4.0-patched/conf/zabbix_server.conf
+--- zabbix-5.4.0/conf/zabbix_server.conf	2021-04-26 18:52:41.000000000 +0300
++++ zabbix-5.4.0-patched/conf/zabbix_server.conf	2021-06-03 13:37:11.324270989 +0300
+@@ -35,7 +35,7 @@
+ # Default:
+ # LogFile=
+ 
+-LogFile=/tmp/zabbix_server.log
++LogFile=/var/log/zabbix/zabbix_server.log
+ 
+ ### Option: LogFileSize
+ #	Maximum size of log file in MB.
+@@ -46,6 +46,8 @@
+ # Default:
+ # LogFileSize=1
+ 
++LogFileSize=0
++
+ ### Option: DebugLevel
+ #	Specifies debug level:
+ #	0 - basic information about starting and stopping of Zabbix processes
+@@ -67,6 +69,8 @@
+ # Default:
+ # PidFile=/tmp/zabbix_server.pid
+ 
++PidFile=/var/run/zabbix/zabbix_server.pid
++
+ ### Option: SocketDir
+ #	IPC socket directory.
+ #		Directory to store IPC sockets used by internal Zabbix services.
+@@ -75,6 +79,8 @@
+ # Default:
+ # SocketDir=/tmp
+ 
++SocketDir=/var/run/zabbix
++
+ ### Option: DBHost
+ #	Database host name.
+ #	If set to localhost, socket is used for MySQL.
+@@ -373,6 +379,8 @@
+ # Default:
+ # SNMPTrapperFile=/tmp/zabbix_traps.tmp
+ 
++SNMPTrapperFile=/var/log/snmptrap/snmptrap.log
++
+ ### Option: StartSNMPTrapper
+ #	If 1, SNMP trapper process is started.
+ #
+@@ -538,7 +546,7 @@
+ #
+ # Mandatory: no
+ # Default:
+-# AlertScriptsPath=${datadir}/zabbix/alertscripts
++# AlertScriptsPath=/usr/lib/zabbix/alertscripts
+ 
+ ### Option: ExternalScripts
+ #	Full path to location of external scripts.
+@@ -547,7 +555,7 @@
+ #
+ # Mandatory: no
+ # Default:
+-# ExternalScripts=${datadir}/zabbix/externalscripts
++# ExternalScripts=/usr/lib/zabbix/externalscripts
+ 
+ ### Option: FpingLocation
+ #	Location of fping.
+diff -urN zabbix-5.4.0/src/go/conf/zabbix_agent2.conf zabbix-5.4.0-patched/src/go/conf/zabbix_agent2.conf
+--- zabbix-5.4.0/src/go/conf/zabbix_agent2.conf	2021-04-26 18:52:41.000000000 +0300
++++ zabbix-5.4.0-patched/src/go/conf/zabbix_agent2.conf	2021-06-03 13:55:33.894315273 +0300
+@@ -10,6 +10,8 @@
+ # Default:
+ # PidFile=/tmp/zabbix_agent2.pid
+ 
++PidFile=/var/run/zabbix/zabbix_agent2.pid
++
+ ### Option: LogType
+ #	Specifies where log messages are written to:
+ #		system  - syslog
+@@ -27,6 +29,8 @@
+ # Default:
+ # LogFile=/tmp/zabbix_agent2.log
+ 
++LogFile=/var/log/zabbix/zabbix_agent2.log
++
+ ### Option: LogFileSize
+ #	Maximum size of log file in MB.
+ #	0 - disable automatic log rotation.
+@@ -36,6 +40,8 @@
+ # Default:
+ # LogFileSize=1
+ 
++LogFileSize=0
++
+ ### Option: DebugLevel
+ #	Specifies debug level:
+ #	0 - basic information about starting and stopping of Zabbix processes
+@@ -259,6 +265,8 @@
+ # Default:
+ # Include=
+ 
++Include=/etc/zabbix/zabbix_agent2.d/*.conf
++
+ # Include=/usr/local/etc/zabbix_agentd.userparams.conf
+ # Include=/usr/local/etc/zabbix_agentd.conf.d/
+ # Include=/usr/local/etc/zabbix_agentd.conf.d/*.conf
+diff -urN zabbix-5.4.0/src/go/conf/zabbix_web_service.conf zabbix-5.4.0-patched/src/go/conf/zabbix_web_service.conf
+--- zabbix-5.4.0/src/go/conf/zabbix_web_service.conf	2021-04-26 18:52:41.000000000 +0300
++++ zabbix-5.4.0-patched/src/go/conf/zabbix_web_service.conf	2021-06-03 13:39:04.704416798 +0300
+@@ -20,6 +20,8 @@
+ # Default:
+ # LogFile=/tmp/zabbix_web_service.log
+ 
++LogFile=/var/log/zabbix/zabbix_web_service.log
++
+ ### Option: LogFileSize
+ #	Maximum size of log file in MB.
+ #	0 - disable automatic log rotation.
+@@ -29,6 +31,8 @@
+ # Default:
+ # LogFileSize=1
+ 
++LogFileSize=0
++
+ ### Option: DebugLevel
+ #	Specifies debug level:
+ #	0 - basic information about starting and stopping of Zabbix processes
