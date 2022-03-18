@@ -1,5 +1,5 @@
 Name:		zabbix
-Version:	5.4.2
+Version:	5.4.11
 Release:	%{?alphatag:0.}2%{?alphatag}%{?dist}.1
 Summary:	The Enterprise-class open source monitoring solution
 Group:		Applications/Internet
@@ -1271,6 +1271,9 @@ fi
 #
 
 %changelog
+* Fri Mar 18 2022 Vadim Raskhozhev <iamdexpl@gmail.com> - 5.4.11-2.1
+- update to 5.4.11
+
 * Thu Jul 15 2021 Vadim Raskhozhev <iamdexpl@gmail.com> - 5.4.2-2.1
 - Built proxy and java gateway for CentOS7
 

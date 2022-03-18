@@ -1,7 +1,7 @@
-diff -Nru zabbix-3.0.2.orig/src/libs/zbxicmpping/icmpping.c zabbix-3.0.2/src/libs/zbxicmpping/icmpping.c
---- zabbix-3.0.2.orig/src/libs/zbxicmpping/icmpping.c	2016-04-20 18:51:21.000000000 +0900
-+++ zabbix-3.0.2/src/libs/zbxicmpping/icmpping.c	2016-04-20 22:28:59.000000000 +0900
-@@ -42,34 +42,7 @@
+diff -up zabbix-5.4.11/src/libs/zbxicmpping/icmpping.c.orig zabbix-5.4.11/src/libs/zbxicmpping/icmpping.c
+--- zabbix-5.4.11/src/libs/zbxicmpping/icmpping.c.orig	2022-03-18 13:18:46.003837766 +0300
++++ zabbix-5.4.11/src/libs/zbxicmpping/icmpping.c	2022-03-18 13:20:30.856464116 +0300
+@@ -54,34 +54,7 @@ static time_t	fping_check_reset_at;	/* t
  
  static void	get_source_ip_option(const char *fping, const char **option, unsigned char *checked)
  {
@@ -13,7 +13,7 @@ diff -Nru zabbix-3.0.2.orig/src/libs/zbxicmpping/icmpping.c zabbix-3.0.2/src/lib
 -	if (NULL == (f = popen(tmp, "r")))
 -		return;
 -
--	while (NULL != fgets(tmp, sizeof(tmp), f))
+-	while (NULL != zbx_fgets(tmp, sizeof(tmp), f))
 -	{
 -		for (p = tmp; isspace(*p); p++)
 -			;
