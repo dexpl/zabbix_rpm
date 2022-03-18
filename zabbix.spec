@@ -1,6 +1,6 @@
 Name:		zabbix
 Version:	5.4.2
-Release:	%{?alphatag:0.}1%{?alphatag}%{?dist}.1
+Release:	%{?alphatag:0.}2%{?alphatag}%{?dist}.1
 Summary:	The Enterprise-class open source monitoring solution
 Group:		Applications/Internet
 License:	GPLv2+
@@ -50,7 +50,7 @@ Buildroot:	%{_tmppath}/zabbix-%{version}-%{release}-root-%(%{__id_u} -n)
 %{!?_tmpfilesdir: %global _tmpfilesdir %{_prefix}/lib/tmpfiles.d}
 %endif
 
-%if 0%{?rhel} >= 9
+%if 0%{?rhel} >= 7
 %{!?build_proxy: %global build_proxy 1}
 %{!?build_java_gateway: %global build_java_gateway 1}
 %endif
@@ -376,6 +376,7 @@ Japanese font configuration for Zabbix web frontend
 %package java-gateway
 Summary:		Zabbix java gateway
 Group:			Applications/Internet
+BuildRequires:		java-devel >= 1.6.0
 Requires:		java-headless >= 1.6.0
 Requires(post):		systemd
 Requires(preun):	systemd
@@ -1270,6 +1271,9 @@ fi
 #
 
 %changelog
+* Thu Jul 15 2021 Vadim Raskhozhev <iamdexpl@gmail.com> - 5.4.2-2.1
+- Built proxy and java gateway for CentOS7
+
 * Wed Jul 07 2021 Vadim Raskhozhev <iamdexpl@gmail.com> - 5.4.2-1.1
 - Built for CentOS7
 
